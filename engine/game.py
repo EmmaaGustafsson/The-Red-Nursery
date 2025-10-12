@@ -21,8 +21,21 @@ class Game:
             self._enter_scene(self.state.scene_id)
 
     def _enter_scene(self, scene_id: str):
-        scene = self.story["scenes"][scene_id]
+        scenes = self.story.get("scenes", {})
+        if scene_id not in scenes:
+            self.ui.typewriter(f"Saknar scen: {scene_id}")
+            self.state.is_running = False
+            self.logger.log("game_end", scene=scene_id, reason="missing_scene")
+            return
+
+        scene = scenes[scene_id]
         self.logger.log("enter_scene", scene=scene_id)
+
+        if scene.get("art") == "creepy_face" and hasattr(self.ui, "render_face"):
+            art = self.ui.render_face(frame=0)
+            if art:
+                self.ui.write(art)
+                self.ui.write("")
 
         self.ui.typewriter(scene.get("text", ""))
         self.ui.write("")
