@@ -21,3 +21,6 @@ Uppdelning av projektet
   - Rasmus
 # tests/test_game.py – PyTest (elev D):
   - Rasmus
+
+
+### Lagt in "save_game" + "load_game" in i util.storage och skrev kommentarer vad koderna gör. Jag testade även ifall funktionen fungerade genom att skapa test_storage.py fil. 100% passed. Skrev in lite random data exempelvis "health: 100" och "location: forest" och såg ifall load_game kunde ta info från det vi "saveat" genom detta "assert loaded_data == test_data". Fick error i början när jag försökte köra pytest från root i projektet och även efter det men löste det genom att skapa en pytest.ini fil, måste läsa mer om vad exakt det är för något. - Rasmus
