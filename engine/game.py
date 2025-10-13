@@ -9,10 +9,6 @@ class GameState:
     is_running: bool = False
 
 class Game:
-    """
-    Minimal motor med save/load. Passar UI (write/typewriter/show_options/get_input),
-    Face via ui.render_face(), och STORY-formatet {"start": str, "scenes": {id: scene}}.
-    """
     def __init__(self, story: Dict[str, Any], ui, logger=None,
                  save_path: Optional[Path] = None, autosave: bool = False):
         self.story = story
@@ -30,8 +26,14 @@ class Game:
             self.state.scene_id = start_scene or self.story["start"]
             self.state.is_running = True
             self.logger.log("game_start", scene=self.state.scene_id)
-        while self.state.is_running:
-            self._enter_scene(self.state.scene_id)
+        try:
+            while self.state.is_running:
+                self._enter_scene(self.state.scene_id)
+        except KeyboardInterrupt:
+            if self.autosave:
+                self.save_state()
+            self.logger.log("game_end", scene=self.state.scene_id, reason="keyboard_interrupt")
+            self.ui.write("\nAvbröt spelet. State sparat.")
 
     def _enter_scene(self, scene_id: str):
         scenes = self.story.get("scenes", {})
@@ -47,7 +49,7 @@ class Game:
         self.logger.log("enter_scene", scene=scene_id)
 
         if self.autosave:
-            self.save_state()  # spara vid scenstart så resume funkar även vid avbrott
+            self.save_state()
 
         if scene.get("art") == "creepy_face" and hasattr(self.ui, "render_face"):
             art = self.ui.render_face(frame=0)
@@ -76,7 +78,6 @@ class Game:
         if self.autosave:
             self.save_state()
 
-    # -------- save/load --------
     def save_state(self):
         if not self.save_path:
             return
