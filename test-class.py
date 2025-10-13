@@ -1,33 +1,37 @@
+import time
+
 class CreepyFace:
-    # Class that represents the creepy face that becomes more complete for every mistake
-    def __init__(self):
-        self.stages = [
-            '''
-                
-                x   o
-                
-            ''',
-            '''
-               ( o   )
-                
-            ''',
-            r'''
-               (   x )
-                \_ _/
-            ''',
-            r'''
-               ( x x )
-                \_-_/
-               /| | |\
-            '''
-        ]
-        self.wrong_count = 0
+    CREEPY_FACE = [
+        '''
+            
+             x o
+            
+        ''',
+        '''
+           ( o x )
+            
+        ''',
+        r'''
+           ( x o )
+            \_ _/
+        ''',
+        r'''
+           ( x x )
+            \_-_/
+           /| | |\
+        '''
+    ]
 
-    def show(self):
-        # Display the current stage of the creepy face
-        stage = min(self.wrong_count, len(self.stages) - 1)
-        print(self.stages[stage])
+    def show(self, wrong_count):
+        stage = wrong_count
+        if stage < 0:
+            stage = 0
+        if stage > len(self.CREEPY_FACE) - 1:
+            stage = len(self.CREEPY_FACE) - 1
 
-    def increment(self):
-        # Increase wrong count to progress the face
-        self.wrong_count += 1
+        
+        for i in range(stage + 1):
+            print(self.CREEPY_FACE[i])
+            time.sleep(0.5) 
+        
+        print(self.CREEPY_FACE[stage])
