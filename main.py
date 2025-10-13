@@ -27,12 +27,19 @@ def main():
     ui.print_blank()
 
     game = Game(
+        story = {
+    "start": "intro",
+    "scenes": SCENES,
+    "win_text": WIN_TEXT,
+    "lose_text": LOSE_TEXT,
+    "right_consequences": RIGHT_CONSEQUENCES,
+    "wrong_consequences": WRONG_CONSEQUENCES
+},
         ui=ui,
-        scenes: Dict[str, Dict[str, Any]] = {}
         # correct_map randomized internally (0/1 per scene), exactly like your code
     )
 
-    result = game.play()  # 'win' or 'lose'
+    result = game.start()  # 'win' or 'lose'
 
     ui.print_blank()
     if result == "win":
