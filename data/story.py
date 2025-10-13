@@ -1,33 +1,31 @@
-# ELEV C
-
 INTRO = [
-    'You wake on the cold tiles of a ruined foyer.',
-    'Wind gnaws through cracked windows; a chandelier sways without a breeze.',
-    'Somewhere in this house lurks the Red Nursery — a room that should not exist.',
+    'You wake on the cold tiles of a ruined hallway.',
+    'Wind gnaws through cracked windows; A low, spectral hum floated through the air, too far to see yet too close to ignore.',
+    'Somewhere in this house lies the Red Nursery — a room that should not exist.',
     'Every wrong turn draws you closer to its door.',
     'Every right turn leads toward a hidden exit, bricked up and buried under ivy.'
 ]
 
 SCENES = [
     {
-        'prompt': 'You stand in the foyer. What do you do?',
+        'prompt': 'You stand in the hallway. What do you do?',
         'options': ('Light the wax candle', 'Follow the cold draft'),
     },
     {
-        'prompt': 'A grandfather clock ticks out of time. The hall splits.',
-        'options': ("Slip into the servants' passage", 'Take the grand staircase'),
+        'prompt': 'A grand staircase presents itself, that later on splits itself in two. Where do you go?',
+        'options': ('Go left', 'Go right'),
     },
     {
-        "prompt": "The library smells of mildew.",
-        "options": ("Pull the leather-strapped book", "Lift the iron floor grate"),
+        'prompt': 'The library smells of mildew. Books covered in dust',
+        'options': ('Pull the leather-strapped book', 'Lift the iron floor grate'),
     },
     {
-        'prompt': 'A narrow gallery. A plaque reads: THE NURSERY.',
-        'options': ('Whisper the etched name', 'Cover the staring portrait'),
-    },
-    {
-        'prompt': 'The kitchen is dusted with flour. Something moved recently.',
+        'prompt': 'The kitchen is dusted with flour. Footprints imprinted in the snow-like foundation. Something was here recently.',
         'options': ('Open the trapdoor by the stove', 'Crawl into the dumbwaiter'),
+    },
+    {
+        'prompt': 'A narrow gallery. An eerie portrait of a woman. A plaque reads: THE NURSERY.',
+        'options': ('Whisper the etched name', 'Cover the staring portrait'),
     },
     {
         'prompt': 'Child-sized hallway. A rose-colored door waits.',

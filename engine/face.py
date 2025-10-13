@@ -1,32 +1,33 @@
-# ELEV C
-
 class CreepyFace:
-    """Simple creepy face with 4 stages (0..3) — unchanged from your code."""
+    # Class that represents the creepy face that becomes more complete for every mistake
+    def __init__(self):
+        self.stages = [
+            '''
+                
+                x   o
+                
+            ''',
+            '''
+               ( o   )
+                
+            ''',
+            r'''
+               (   x )
+                \_ _/
+            ''',
+            r'''
+               ( x x )
+                \_-_/
+               /| | |\
+            '''
+        ]
+        self.wrong_count = 0
 
-    CREEPY_FACE = [
-        '''
-            
-             x o
-            
-        ''',
-        '''
-           ( o x )
-            
-        ''',
-        r'''
-           ( x o )
-            \_ _/
-        ''',
-        r'''
-           ( x x )
-            \_-_/
-           /| | |\
-        '''
-    ]
+    def show(self):
+        # Display the current stage of the creepy face
+        stage = min(self.wrong_count, len(self.stages) - 1)
+        print(self.stages[stage])
 
-    def show(self, wrong_count):
-        """Show the current stage of the creepy face based on wrong choices."""
-        stage = wrong_count
-        if stage < 0: stage = 0
-        if stage > 3: stage = 3
-        print(self.CREEPY_FACE[stage])
+    def increment(self):
+        # Increase wrong count to progress the face
+        self.wrong_count += 1
