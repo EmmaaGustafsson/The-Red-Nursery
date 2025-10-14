@@ -1,58 +1,88 @@
-from dataclasses import dataclass  # importerar hjälp för enkel dataklass
+from dataclasses import dataclass  # enkel dataklass – vi slipper skriva egen __init__
 
-@dataclass  # genererar __init__/__repr__/__eq__ automatiskt
-class GameState:  # håller spelets nuvarande läge
-    scene_id: str = ""  # id för aktuell scen
-    is_running: bool = False  # om huvudloopen ska fortsätta
+# =========================
+# Översikt (engine/game.py)
+# - GameState: håller aktuell scen och om spelet kör
+# - Game: kör loopen scen → val → nästa scen via UI
+# =========================
 
-class Game:  # själva spelmotorn
-    def __init__(self, story, ui, logger=None):  # sätter upp motorn med data, UI och valfri logger
-        self.story = story  # hela berättelsen (start + scenes)
-        self.ui = ui  # gränssnitt för utskrift/inmatning
-        self.logger = logger or _NullLogger()  # använd given logger eller en tyst standard
-        self.state = GameState()  # starta med tomt speltillstånd
+@dataclass
+class GameState:
+    """Spelets nuvarande läge: vilken scen vi är i och om loopen ska rulla."""
+    scene_id: str = ""      # id för aktuell scen
+    is_running: bool = False  # True så länge huvudloopen ska köra
 
-    def start(self, start_scene=None):  # startar spelet från given scen eller standard
-        self.state.scene_id = start_scene or self.story["start"]  # välj startscen
-        self.state.is_running = True  # slå på huvudloopen
-        self.logger.log("game_start", scene=self.state.scene_id)  # logga att spelet börjar
-        while self.state.is_running:  # kör så länge spelet är aktivt
-            self._enter_scene(self.state.scene_id)  # processa aktuell scen
+class Game:
+    """Själva spelmotorn.
+       Förväntar:
+       - story: {"start": str, "scenes": {id: scen}}
+       - ui: typewriter(text), write(text), show_options(options), get_input(prompt, valid_keys)
+             valfritt: render_face(frame=0) för ASCII-art
+       - logger: valfri, måste ha .log(event, **fields) om den skickas in
+    """
 
-    def _enter_scene(self, scene_id):  # spelar upp en scen och bestämmer nästa
+    def __init__(self, story, ui, logger=None):
+        # Spara beroenden och starta med tomt state
+        self.story = story          # all berättelsedata (start + scenes)
+        self.ui = ui                # användargränssnitt för utskrift och input
+        self.logger = logger or _NullLogger()  # tyst logger om ingen skickas in
+        self.state = GameState()    # scene_id="" och is_running=False från början
+
+    def start(self, start_scene=None):
+        """Väljer startscen och kör huvudloopen tills spelet tar slut."""
+        self.state.scene_id = start_scene or self.story["start"]  # starta på given eller definierad start-scen
+        self.state.is_running = True                               # tänd loopen
+        self.logger.log("game_start", scene=self.state.scene_id)   # logga att spelet startar
+
+        # Huvudloop: processa scener tills en slut-scen stoppar spelet
+        while self.state.is_running:
+            self._enter_scene(self.state.scene_id)
+
+    def _enter_scene(self, scene_id):
+        """Rendera en scen, hantera spelarens val och bestäm nästa scen.
+           Avslutar spelet om scenen saknas eller är märkt som slut.
+        """
         scenes = self.story.get("scenes", {})  # hämta alla scener
-        if scene_id not in scenes:  # om scenen saknas
-            self.ui.typewriter(f"Saknar scen: {scene_id}")  # meddela spelaren
-            self.state.is_running = False  # stoppa spelet
-            self.logger.log("game_end", scene=scene_id, reason="missing_scene")  # logga orsak
-            return  # avsluta scenhanteringen
 
-        scene = scenes[scene_id]  # hämta scenobjektet
-        self.logger.log("enter_scene", scene=scene_id)  # logga att vi gick in i scenen
+        # Skydd: om scen-id saknas i story → informera, logga och stoppa snyggt
+        if scene_id not in scenes:
+            self.ui.typewriter(f"Saknar scen: {scene_id}")
+            self.state.is_running = False
+            self.logger.log("game_end", scene=scene_id, reason="missing_scene")
+            return
 
-        if scene.get("art") == "creepy_face" and hasattr(self.ui, "render_face"):  # specialfall för ASCII-art
-            art = self.ui.render_face(frame=0)  # rendera första ramen
-            if art:  # om något genererades
-                self.ui.write(art)  # skriv ut grafiken
-                self.ui.write("")  # tom rad för luft
+        scene = scenes[scene_id]                       # slå upp scenobjektet
+        self.logger.log("enter_scene", scene=scene_id) # logga inträde i scenen
 
-        self.ui.typewriter(scene.get("text", ""))  # skriv scenens berättelsetext
-        self.ui.write("")  # tom rad efter text
+        # Valfri ASCII-art: visas bara om scenen ber om det och UI kan rendera
+        if scene.get("art") == "creepy_face" and hasattr(self.ui, "render_face"):
+            art = self.ui.render_face(frame=0)
+            if art:
+                self.ui.write(art)
+                self.ui.write("")
 
-        options = scene.get("options") or []  # hämta valen eller tom lista
-        if scene.get("end", False) or not options:  # om scenen är slut eller saknar val
+        # Berättelsetext
+        self.ui.typewriter(scene.get("text", ""))
+        self.ui.write("")
+
+        # Slutscen eller val
+        options = scene.get("options") or []
+        if scene.get("end", False) or not options:
             self.logger.log("game_end", scene=scene_id)  # logga att spelet tar slut här
-            self.state.is_running = False  # stäng av loopen
-            return  # avsluta scenen
+            self.state.is_running = False                # stäng av loopen
+            return
 
-        self.ui.show_options(options)  # visa valen för spelaren
-        valid_keys = [o["key"] for o in options]  # lista med tillåtna knappval
-        choice_key = self.ui.get_input("Välj: ", valid_keys)  # läs ett giltigt val från användaren
+        # Visa val, läs ett giltigt val och hoppa
+        self.ui.show_options(options)                          # rendera alternativen
+        valid_keys = [o["key"] for o in options]               # tillåtna val-tangenter
+        choice_key = self.ui.get_input("Välj: ", valid_keys)   # läs användarens val
         chosen = next(o for o in options if o["key"] == choice_key)  # hitta valt alternativ
 
-        self.logger.log("choice", from_scene=scene_id, choice=choice_key, goto=chosen["goto"])  # logga valet
-        self.state.scene_id = chosen["goto"]  # hoppa till nästa scen
+        # Logga valet och byt scen
+        self.logger.log("choice", from_scene=scene_id, choice=choice_key, goto=chosen["goto"])
+        self.state.scene_id = chosen["goto"]  # nästa scen körs i nästa loop-varv
 
-class _NullLogger:  # logger som inte gör något (säker standard)
-    def log(self, *args, **kwargs):  # accepterar vilka argument som helst
-        pass  # inga sidoeffekter
+class _NullLogger:
+    """Tyst logger: tar emot alla logganrop men gör ingenting."""
+    def log(self, *args, **kwargs):
+        pass
