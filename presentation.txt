@@ -1,0 +1,11 @@
+﻿Presentation
+* Hur kom vår ide till, vad inspirerade oss
+* Hur har vi kommunicerat och samarbetat
+* Vad har varit svårt/ lätt
+* Vad har vi lärt oss
+
+
+Kort presentation av allas kod, lite vad den gör
+
+
+Uppvisning av koden

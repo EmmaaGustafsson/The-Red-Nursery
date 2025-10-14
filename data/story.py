@@ -1,6 +1,6 @@
 INTRO = [
     'You wake on the cold tiles of a ruined hallway.',
-    'Wind gnaws through cracked windows; A low, spectral hum floated through the air, too far to see yet too close to ignore.',
+    'Wind gnaws through cracked windows; A low, spectral humming of a lullaby floats through the air, too far to see yet too close to ignore.',
     'Somewhere in this house lies the Red Nursery — a room that should not exist.',
     'Every wrong turn draws you closer to its door.',
     'Every right turn leads toward a hidden exit, bricked up and buried under ivy.'
@@ -42,8 +42,11 @@ WIN_TEXT = [
 LOSE_TEXT = [
     'The door swings inward to a room the house kept warm.',
     'A cradle rocks itself. Tiny fingernail scratches score the walls.',
-    'The lullaby begins behind your ear.',
-    'THE RED NURSERY FOUND YOU.'
+    'The lullaby begins again — soft, sweet, and inescapable.',
+    'A silouette of a woman lingers in the corner, her head tilting slowly toward you.',
+    'The door behind you slams shut',
+    'Attempts to open it are futile, the door is as heavy as the air in the room',
+    'YOU HAVE BEEN TRAPPED IN THE RED NURSERY.'
 ]
 
 RIGHT_CONSEQUENCES = [
