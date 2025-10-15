@@ -34,6 +34,7 @@ def main():
 
     ui = UI(type_delay=TYPE_DELAY, pulse_on_ms=PULSE_ON_MS, pulse_off_ms=PULSE_OFF_MS)
     face = CreepyFace()
+    ui.face = face
 
     # ---- NYTT: UI-adapter så motorn får metoderna den förväntar sig ----
     if not hasattr(ui, "typewriter"):
@@ -57,7 +58,7 @@ def main():
         ui.get_input = _get_input
 
     # Titel + intro
-    ui.type_line(f"{TITLE_DECOR}HAUNTED HOUSE: The Red Nursery", delay=0.1)
+    ui.type_line("HAUNTED HOUSE: The Red Nursery", delay=0.1) ### tog bort "f"{TITLE_DECOR}" och la bara in det som "HAUNTED HOUSE" eftersom den visade texten såhär [1mHAUNTED HOUSE] innan.
     ui.type_lines(INTRO, delay=TYPE_DELAY)
     ui.pulse_until_enter(">> Press Enter to begin <<")
     ui.print_blank()
@@ -68,6 +69,9 @@ def main():
     game = Game(
         story=story,
         ui=ui,
+        face=face, ###La till face, right/wrong_cons så spelet visar ansiktet vid fel svar
+        right_cons=RIGHT_CONSEQUENCES,
+        wrong_cons=WRONG_CONSEQUENCES
         # ingen autosave/resume i motorn längre
     )
 

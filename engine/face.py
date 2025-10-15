@@ -29,9 +29,6 @@ class CreepyFace:
         if stage > len(self.CREEPY_FACE) - 1:
             stage = len(self.CREEPY_FACE) - 1
 
-        
-        for i in range(stage + 1):
-            print(self.CREEPY_FACE[i])
-            time.sleep(0.5) 
+        ###TOG BORT loopen som gjorde att den skrev ut alla stadier på ansiktet upp till nuvarande steg. Typ om jag hade svarat fel 2ggr så kom 3st ansikten upp. Genom att ta bort detta så printar den endast nuvarande ansikte för nuvarande steg.
         
         print(self.CREEPY_FACE[stage])
